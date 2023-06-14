@@ -8,14 +8,6 @@ This project is based upon [OWASP Java HTML Sanitizer](https://github.com/OWASP/
 
 ## Getting started
 
-#### Installing the plugin
-
-1. Download the [latest](https://github.qualcomm.com/team6/jenkins-formatter/releases/download/v4.0/custom-markup-formatter.hpi) plugin binary(HPI file). To install older binaries, visit [release](https://github.qualcomm.com/team6/jenkins-formatter/releases) page.
-
-2. Navigate to Manage Plugins page in Jenkins. (Jenkins Home Page -> Manage Jenkins -> Manage Plugins)
-
-3. Select Advanced tab and upload plugin.
-
 #### Setting the formatter
 
 1. Navigate to *Configure Global Security page*
