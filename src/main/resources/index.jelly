@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+    Visit <a href="http://go/jformatter" target="_blank">Github</a> for more info
+</div>
