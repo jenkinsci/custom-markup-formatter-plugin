@@ -59,6 +59,7 @@ public class PolicyConfiguration extends GlobalConfiguration {
         save();
     }
 
+    @SuppressWarnings({"lgtm[jenkins/no-permission-check]", "lgtm[jenkins/csrf]"})
     public FormValidation doCheckPolicyDefinition(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
             return FormValidation.warning("Please specify a value.");
