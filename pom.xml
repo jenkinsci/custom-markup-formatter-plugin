@@ -23,6 +23,17 @@
     <name>Customizable HTML Formatter Plugin</name>
     <description>HTML Sanitizer with customizable rules.</description>
     <url>https://github.com/dhavalpateln/custom-markup-formatter</url>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/dhavalpateln/custom-markup-formatter.git</connection>
+        <developerConnection>scm:git:git@github.com:dhavalpateln/custom-markup-formatter.git</developerConnection>
+        <url>https://github.com/dhavalpateln/custom-markup-formatter</url>
+    </scm>
 
     <developers>
       <developer>
