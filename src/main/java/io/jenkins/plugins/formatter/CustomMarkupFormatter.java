@@ -39,6 +39,7 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         PolicyFactory DEFINITION = null;
         try {
             DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
+            HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
@@ -49,7 +50,23 @@ public class CustomMarkupFormatter extends MarkupFormatter {
             e.printStackTrace();
         }
 
-        HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+        if(DEFINITION == null) {
+            try {
+                DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
+                HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (DefinedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
     }
 
     @Extension

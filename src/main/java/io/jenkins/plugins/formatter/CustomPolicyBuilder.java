@@ -245,9 +245,9 @@ public class CustomPolicyBuilder {
 
         String htmlString = "<font color=\"red\" size = \"5\"> hello";
 
-        PolicyFactory policyFactory = null;
         try {
-            policyFactory = build(jsonString);
+            PolicyFactory policyFactory = build(jsonString);
+            System.out.println(policyFactory.sanitize(htmlString));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
@@ -257,7 +257,6 @@ public class CustomPolicyBuilder {
         } catch (DefinedException e) {
             e.printStackTrace();
         }
-        System.out.println(policyFactory.sanitize(htmlString));
 
     }
 }
