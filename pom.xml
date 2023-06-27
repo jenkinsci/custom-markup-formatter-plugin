@@ -16,9 +16,7 @@
     <properties>
         <revision>1.0</revision>
         <jenkins.version>2.387.3</jenkins.version>
-        <java.level>8</java.level>
         <jcasc.version>1.35</jcasc.version>
-        <skipTests>true</skipTests>
     </properties>
     <name>Customizable HTML Formatter Plugin</name>
     <description>HTML Sanitizer with customizable rules.</description>
@@ -30,18 +28,10 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:https://github.com/dhavalpateln/custom-markup-formatter.git</connection>
-        <developerConnection>scm:git:git@github.com:dhavalpateln/custom-markup-formatter.git</developerConnection>
-        <url>https://github.com/dhavalpateln/custom-markup-formatter</url>
+        <connection>scm:git:https://github.com/jenkinsci/custom-markup-formatter.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/custom-markup-formatter.git</developerConnection>
+        <url>https://github.com/jenkinsci/custom-markup-formatter</url>
     </scm>
-
-    <developers>
-      <developer>
-        <id>quic_dhapat</id>
-        <name>Dhaval Patel</name>
-        <email>quic_dhapat@quicinc.com</email>
-      </developer>
-    </developers>
 
     <repositories>
         <repository>
@@ -60,15 +50,21 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.jenkins.tools.bom</groupId>
+            <artifactId>bom-2.387.x</artifactId>
+            <version>2198.v39c76fc308ca</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
             <version>20191001.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20200518</version>
+            <version>20230618</version>
         </dependency>
 
     </dependencies>
