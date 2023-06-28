@@ -6,6 +6,7 @@ import hudson.Extension;
 import hudson.markup.MarkupFormatter;
 import hudson.markup.MarkupFormatterDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.owasp.html.Handler;
 import org.owasp.html.HtmlSanitizer;
 import org.owasp.html.HtmlStreamRenderer;
 import org.owasp.html.PolicyFactory;
@@ -28,7 +29,7 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         HtmlStreamRenderer renderer = HtmlStreamRenderer.create(
                 writer,
                 // Receives notifications on a failure to write to the output.
-                Throwables::propagate, // System.out suppresses IOExceptions
+                Handler.PROPAGATE, // System.out suppresses IOExceptions
                 // Our HTML parser is very lenient, but this receives notifications on
                 // truly bizarre inputs.
                 x -> {
@@ -40,13 +41,7 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         try {
             DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
             HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (DefinedException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
             e.printStackTrace();
         }
 
@@ -54,13 +49,7 @@ public class CustomMarkupFormatter extends MarkupFormatter {
             try {
                 DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
                 HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (DefinedException e) {
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
                 e.printStackTrace();
             }
         }
