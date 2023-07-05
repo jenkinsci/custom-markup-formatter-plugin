@@ -20,7 +20,8 @@
     </properties>
     <name>Customizable HTML Formatter Plugin</name>
     <description>HTML Sanitizer with customizable rules.</description>
-    <url>https://github.com/dhavalpateln/custom-markup-formatter</url>
+    <url>https://github.com/jenkinsci/custom-markup-formatter</url>
+
     <licenses>
         <license>
             <name>MIT</name>

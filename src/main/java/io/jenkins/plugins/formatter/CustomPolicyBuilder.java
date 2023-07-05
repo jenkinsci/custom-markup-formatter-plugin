@@ -212,6 +212,7 @@ public class CustomPolicyBuilder {
             .toFactory();
 
     public static void main(String[] args) {
+
         String jsonString = "[\n" +
                 "\t{\n" +
                 "\t\t\"type\": \"inbuilt\",\n" +
@@ -248,13 +249,7 @@ public class CustomPolicyBuilder {
         try {
             PolicyFactory policyFactory = build(jsonString);
             System.out.println(policyFactory.sanitize(htmlString));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (DefinedException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
             e.printStackTrace();
         }
 
