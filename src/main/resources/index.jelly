@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Visit <a href="http://go/jformatter" target="_blank">Github</a> for more info
+    Allows customizing policies to sanitize HTML content used in job description. Visit <a href="https://github.com/jenkinsci/custom-markup-formatter/blob/master/README.md" target="_blank">Github</a> for more info
 </div>

@@ -5,13 +5,14 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.markup.MarkupFormatter;
 import hudson.markup.MarkupFormatterDescriptor;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.owasp.html.Handler;
 import org.owasp.html.HtmlSanitizer;
 import org.owasp.html.HtmlStreamRenderer;
 import org.owasp.html.PolicyFactory;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 
 public class CustomMarkupFormatter extends MarkupFormatter {
@@ -25,10 +26,11 @@ public class CustomMarkupFormatter extends MarkupFormatter {
 
     @Override
     public void translate(String s, @NonNull Writer writer) throws IOException {
+
         HtmlStreamRenderer renderer = HtmlStreamRenderer.create(
                 writer,
                 // Receives notifications on a failure to write to the output.
-                Throwables::propagate, // System.out suppresses IOExceptions
+                Handler.PROPAGATE, // System.out suppresses IOExceptions
                 // Our HTML parser is very lenient, but this receives notifications on
                 // truly bizarre inputs.
                 x -> {
@@ -39,17 +41,22 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         PolicyFactory DEFINITION = null;
         try {
             DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (DefinedException e) {
+            HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
             e.printStackTrace();
         }
 
-        HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+        if(DEFINITION == null) {
+            try {
+                DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
+                HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
     }
 
     @Extension

@@ -212,6 +212,7 @@ public class CustomPolicyBuilder {
             .toFactory();
 
     public static void main(String[] args) {
+
         String jsonString = "[\n" +
                 "\t{\n" +
                 "\t\t\"type\": \"inbuilt\",\n" +
@@ -245,19 +246,12 @@ public class CustomPolicyBuilder {
 
         String htmlString = "<font color=\"red\" size = \"5\"> hello";
 
-        PolicyFactory policyFactory = null;
         try {
-            policyFactory = build(jsonString);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (DefinedException e) {
+            PolicyFactory policyFactory = build(jsonString);
+            System.out.println(policyFactory.sanitize(htmlString));
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
             e.printStackTrace();
         }
-        System.out.println(policyFactory.sanitize(htmlString));
 
     }
 }

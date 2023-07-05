@@ -23,7 +23,7 @@ public class PolicyConfiguration extends GlobalConfiguration {
 
     private String policyDefinition;
 
-    private static final String DEFAULT_POLICY = "[\n" +
+    public static final String DEFAULT_POLICY = "[\n" +
             "\t{\n" +
             "\t\t\"type\": \"inbuilt\",\n" +
             "\t\t\"name\": \"blocks, formatting, styles, links, tables, images\"\n" +
@@ -65,9 +65,8 @@ public class PolicyConfiguration extends GlobalConfiguration {
             return FormValidation.warning("Please specify a value.");
         }
 
-        PolicyFactory policyFactory = null;
         try {
-            policyFactory = CustomPolicyBuilder.build(value);
+            CustomPolicyBuilder.build(value);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return FormValidation.error(e.getMessage());
