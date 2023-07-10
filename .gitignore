@@ -9,11 +9,8 @@ work
 *.iws
 *.ipr
 .idea
-.mvn
 
 # Eclipse project files
 .settings
 .classpath
 .project
-
->>>>>>> 770efe4... Initial commit
