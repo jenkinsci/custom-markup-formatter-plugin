@@ -11,10 +11,10 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>custom-markup-formatter</artifactId>
-    <version>${revision}</version>
+    <version>${changelist}</version>
     <packaging>hpi</packaging>
     <properties>
-        <revision>1.0</revision>
+        <changelist>999999-SNAPSHOT</changelist>
         <jenkins.version>2.387.3</jenkins.version>
         <jcasc.version>1.35</jcasc.version>
     </properties>
