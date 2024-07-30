@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.65</version>
+        <version>4.86</version>
         <relativePath />
 
     </parent>
@@ -15,7 +15,7 @@
     <packaging>hpi</packaging>
     <properties>
         <changelist>999999-SNAPSHOT</changelist>
-        <jenkins.version>2.387.3</jenkins.version>
+        <jenkins.version>2.414.3</jenkins.version>
         <jcasc.version>1.35</jcasc.version>
     </properties>
     <name>Customizable HTML Formatter Plugin</name>
@@ -53,8 +53,8 @@
         <dependencies>
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.387.x</artifactId>
-                <version>2230.v0cb_4040cde55</version>
+                <artifactId>bom-2.414.x</artifactId>
+                <version>2982.vdce2153031a_0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -67,9 +67,8 @@
             <artifactId>antisamy-markup-formatter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20230618</version>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>json-api</artifactId>
         </dependency>
     </dependencies>
 </project>
