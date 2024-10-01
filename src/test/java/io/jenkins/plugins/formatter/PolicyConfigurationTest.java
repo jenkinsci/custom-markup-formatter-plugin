@@ -1,7 +1,7 @@
 package io.jenkins.plugins.formatter;
 
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlTextArea;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
