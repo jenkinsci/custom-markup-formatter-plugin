@@ -1,21 +1,24 @@
 package io.jenkins.plugins.formatter;
 
-import com.google.common.base.Throwables;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.markup.MarkupFormatter;
 import hudson.markup.MarkupFormatterDescriptor;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.owasp.html.Handler;
 import org.owasp.html.HtmlSanitizer;
 import org.owasp.html.HtmlStreamRenderer;
 import org.owasp.html.PolicyFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CustomMarkupFormatter extends MarkupFormatter {
+
+    private static final Logger LOGGER = Logger.getLogger(CustomMarkupFormatter.class.getName());
 
     final boolean disableSyntaxHighlighting;
 
@@ -26,7 +29,6 @@ public class CustomMarkupFormatter extends MarkupFormatter {
 
     @Override
     public void translate(String s, @NonNull Writer writer) throws IOException {
-
         HtmlStreamRenderer renderer = HtmlStreamRenderer.create(
                 writer,
                 // Receives notifications on a failure to write to the output.
@@ -43,25 +45,23 @@ public class CustomMarkupFormatter extends MarkupFormatter {
             DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
             HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Unable to build custom policy definition", e);
         }
 
-        if(DEFINITION == null) {
+        if (DEFINITION == null) {
             try {
                 DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
                 HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "Unable to build default policy definition", e);
             }
         }
-
-
-
     }
 
     @Extension
     public static class DescriptorImpl extends MarkupFormatterDescriptor {
         @Override
+        @NonNull
         public String getDisplayName() {
             return "Customizable HTML Formatter";
         }

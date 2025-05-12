@@ -2,15 +2,23 @@ package io.jenkins.plugins.formatter;
 
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlTextArea;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class PolicyConfigurationTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-    @Rule
-    public RestartableJenkinsRule rr = new RestartableJenkinsRule();
+@WithJenkins
+class PolicyConfigurationTest {
+
+    private JenkinsRule r;
+
+    @BeforeEach
+    void setUp(JenkinsRule rule) {
+        r = rule;
+    }
 
     /**
      * Tries to exercise enough code paths to catch common mistakes:
@@ -22,18 +30,17 @@ public class PolicyConfigurationTest {
      * </ul>
      */
     @Test
-    public void uiAndStorage() {
-        rr.then(r -> {
-            assertNotNull("Have a default Policy", PolicyConfiguration.get().getPolicyDefinition());
-            HtmlForm config = r.createWebClient().goTo("configure").getFormByName("config");
-            HtmlTextArea textarea = config.getTextAreaByName("_.policyDefinition");
-            textarea.setText("[{\"type\":\"default\", \"name\":\"2\"}]");
-            r.submit(config);
-            assertEquals("global config page let us edit it", "[{\"type\":\"default\", \"name\":\"2\"}]", PolicyConfiguration.get().getPolicyDefinition());
-        });
-        rr.then(r -> {
-            assertEquals("still there after restart of Jenkins", "[{\"type\":\"default\", \"name\":\"2\"}]", PolicyConfiguration.get().getPolicyDefinition());
-        });
+    void uiAndStorage() throws Throwable {
+        assertNotNull(PolicyConfiguration.get().getPolicyDefinition(), "Have a default Policy");
+        HtmlForm config = r.createWebClient().goTo("configure").getFormByName("config");
+        HtmlTextArea textarea = config.getTextAreaByName("_.policyDefinition");
+        textarea.setText("[{\"type\":\"default\", \"name\":\"2\"}]");
+        r.submit(config);
+        assertEquals("[{\"type\":\"default\", \"name\":\"2\"}]", PolicyConfiguration.get().getPolicyDefinition(), "global config page let us edit it");
+
+        r.restart();
+
+        assertEquals("[{\"type\":\"default\", \"name\":\"2\"}]", PolicyConfiguration.get().getPolicyDefinition(), "still there after restart of Jenkins");
     }
 
 }
