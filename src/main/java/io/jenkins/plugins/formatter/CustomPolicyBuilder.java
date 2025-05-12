@@ -17,33 +17,28 @@ public class CustomPolicyBuilder {
     public static final String DEFAULT_TYPE = "default";
 
     public static void trimArray(String[] arr) {
-        for(int i = 0; i < arr.length; i++) { arr[i] = arr[i].trim(); }
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].trim();
+        }
     }
 
     private static PolicyFactory getInbuiltPolicy(String name) throws DefinedException {
         name = name.toUpperCase().trim();
-        switch (name) {
-            case "BLOCKS":
-                return Sanitizers.BLOCKS;
-            case "TABLES":
-                return Sanitizers.TABLES;
-            case "LINKS":
-                return Sanitizers.LINKS;
-            case "FORMATTING":
-                return Sanitizers.FORMATTING;
-            case "IMAGES":
-                return Sanitizers.IMAGES;
-            case "STYLES":
-                return Sanitizers.STYLES;
-            default:
-                throw new DefinedException("No inbuilt policy named \"" + name + "\" found");
-        }
+        return switch (name) {
+            case "BLOCKS" -> Sanitizers.BLOCKS;
+            case "TABLES" -> Sanitizers.TABLES;
+            case "LINKS" -> Sanitizers.LINKS;
+            case "FORMATTING" -> Sanitizers.FORMATTING;
+            case "IMAGES" -> Sanitizers.IMAGES;
+            case "STYLES" -> Sanitizers.STYLES;
+            default -> throw new DefinedException("No inbuilt policy named \"" + name + "\" found");
+        };
     }
 
     public static PolicyFactory build(String jsonArrayString) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, DefinedException {
         JSONArray policyJsonArray = new JSONArray(jsonArrayString);
         PolicyFactory policyFactory = parseJsonPolicy(policyJsonArray.getJSONObject(0));
-        for(int policyNumber = 1; policyNumber < policyJsonArray.length(); policyNumber++) {
+        for (int policyNumber = 1; policyNumber < policyJsonArray.length(); policyNumber++) {
             JSONObject policyJson = policyJsonArray.getJSONObject(policyNumber);
             PolicyFactory policy = parseJsonPolicy(policyJson);
             policyFactory = policyFactory.and(policy);
@@ -58,69 +53,63 @@ public class CustomPolicyBuilder {
             case INBUILT_TYPE:
                 String[] inbuiltPolicyNames = policyJson.getString("name").split(",");
                 PolicyFactory policyFactory = getInbuiltPolicy(inbuiltPolicyNames[0]);
-                for(int inbuiltPolicyNumber = 1; inbuiltPolicyNumber < inbuiltPolicyNames.length; inbuiltPolicyNumber++) {
+                for (int inbuiltPolicyNumber = 1; inbuiltPolicyNumber < inbuiltPolicyNames.length; inbuiltPolicyNumber++) {
                     policyFactory = policyFactory.and(getInbuiltPolicy(inbuiltPolicyNames[inbuiltPolicyNumber]));
                 }
                 return policyFactory;
             case NEW_TYPE:
                 HtmlPolicyBuilder policyBuilder = new HtmlPolicyBuilder();
-                if(policyJson.has("allow")) {
+                if (policyJson.has("allow")) {
                     JSONObject allowedTags = policyJson.getJSONObject("allow");
-                    for(String tagListStr : allowedTags.keySet()) {
+                    for (String tagListStr : allowedTags.keySet()) {
                         String[] tagList = tagListStr.split(",");
                         Object tagAttrConfigValue = allowedTags.get(tagListStr);
                         JSONArray attrConfigList = new JSONArray();
-                        if(tagAttrConfigValue instanceof String) {
+                        if (tagAttrConfigValue instanceof String) {
                             String[] attributeList = allowedTags.getString(tagListStr).split(",");
                             trimArray(attributeList);
-                            for(String attr: attributeList) {
+                            for (String attr : attributeList) {
                                 String[] a = attr.split("::", 2);
                                 JSONObject jsonObject = new JSONObject();
                                 jsonObject.put("name", a[0]);
-                                if(a.length > 1) {
+                                if (a.length > 1) {
                                     jsonObject.put("pattern", a[1]);
                                 }
                                 attrConfigList.put(jsonObject);
                             }
-                        }
-                        else if(tagAttrConfigValue instanceof JSONArray) {
-                            JSONArray attrJSONArrayList = (JSONArray) tagAttrConfigValue;
-                            for(int i = 0; i < attrJSONArrayList.length(); i++) {
+                        } else if (tagAttrConfigValue instanceof JSONArray attrJSONArrayList) {
+                            for (int i = 0; i < attrJSONArrayList.length(); i++) {
                                 Object attr = attrJSONArrayList.get(i);
-                                if(attr instanceof String) {
+                                if (attr instanceof String) {
                                     String[] a = ((String) attr).trim().split("::", 2);
                                     JSONObject jsonObject = new JSONObject();
                                     jsonObject.put("name", a[0]);
-                                    if(a.length > 1) {
+                                    if (a.length > 1) {
                                         jsonObject.put("pattern", a[1]);
                                     }
                                     attrConfigList.put(jsonObject);
-                                }
-                                else if(attr instanceof JSONObject) {
+                                } else if (attr instanceof JSONObject) {
                                     attrConfigList.put(attr);
-                                }
-                                else {
+                                } else {
                                     throw new DefinedException("Invalid value " + attrJSONArrayList.getString(i));
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             throw new DefinedException("Invalid value for tag: " + tagListStr);
                         }
 
                         trimArray(tagList);
-                        for(String tag : tagList) {
+                        for (String tag : tagList) {
                             policyBuilder = policyBuilder.allowElements(tag);
-                            if(attrConfigList.length() > 0) {
+                            if (!attrConfigList.isEmpty()) {
                                 policyBuilder = policyBuilder.allowWithoutAttributes(tag);
-                                for(int attrNum = 0; attrNum < attrConfigList.length(); attrNum++) {
+                                for (int attrNum = 0; attrNum < attrConfigList.length(); attrNum++) {
                                     JSONObject attrConfig = attrConfigList.getJSONObject(attrNum);
-                                    if(attrConfig.has("pattern")) {
+                                    if (attrConfig.has("pattern")) {
                                         Pattern pattern = Pattern.compile(attrConfig.getString("pattern"));
                                         policyBuilder = policyBuilder.allowAttributes(attrConfig.getString("name"))
                                                 .matching(pattern).onElements(tag);
-                                    }
-                                    else {
+                                    } else {
                                         policyBuilder = policyBuilder.allowAttributes(attrConfig.getString("name"))
                                                 .onElements(tag);
                                     }
@@ -129,31 +118,28 @@ public class CustomPolicyBuilder {
                         }
                     }
                 }
-                if(policyJson.has("methods")) {
+                if (policyJson.has("methods")) {
                     JSONObject methods = policyJson.getJSONObject("methods");
-                    for(String methodName : methods.keySet()) {
+                    for (String methodName : methods.keySet()) {
                         String[] args = methods.getString(methodName).split(",");
 
                         trimArray(args);
                         Method method;
-                        if(args[0].equals("")) {
+                        if (args[0].isEmpty()) {
                             method = policyBuilder.getClass().getMethod(methodName);
-                        }
-                        else {
+                        } else {
                             method = policyBuilder.getClass().getMethod(methodName, String[].class);
 
                         }
-                        Class returnType = method.getReturnType();
+                        Class<?> returnType = method.getReturnType();
 
-                        if(returnType == HtmlPolicyBuilder.class && args[0].equals("")) {
+                        if (returnType == HtmlPolicyBuilder.class && args[0].isEmpty()) {
                             policyBuilder = (HtmlPolicyBuilder) method.invoke(policyBuilder);
-                        }
-                        else if(returnType == HtmlPolicyBuilder.class) {
-                            policyBuilder = (HtmlPolicyBuilder) method.invoke(policyBuilder, new Object[] {args});
-                        }
-                        else if(returnType == HtmlPolicyBuilder.AttributeBuilder.class) {
+                        } else if (returnType == HtmlPolicyBuilder.class) {
+                            policyBuilder = (HtmlPolicyBuilder) method.invoke(policyBuilder, new Object[]{args});
+                        } else if (returnType == HtmlPolicyBuilder.AttributeBuilder.class) {
                             String tagName = policyJson.getString("name");
-                            HtmlPolicyBuilder.AttributeBuilder attrPolicy = (HtmlPolicyBuilder.AttributeBuilder) method.invoke(policyBuilder, new Object[] {args});
+                            HtmlPolicyBuilder.AttributeBuilder attrPolicy = (HtmlPolicyBuilder.AttributeBuilder) method.invoke(policyBuilder, new Object[]{args});
                             policyBuilder = attrPolicy.onElements(tagName);
                         }
                     }
@@ -163,39 +149,40 @@ public class CustomPolicyBuilder {
 
             case DEFAULT_TYPE:
                 String name = policyJson.getString("name");
-                if(name.equals("1")) {
-                    String defaultJsonPolicy = "[\n" +
-                            "\t{\n" +
-                            "\t\t\"type\": \"inbuilt\",\n" +
-                            "\t\t\"name\": \"blocks, formatting, styles, tables, images\"\n" +
-                            "\t},\n" +
-                            "\t{\n" +
-                            "\t\t\"type\": \"new\",\n" +
-                            "\t\t\"allow\": {\n" +
-                            "\t\t\t\"dl, dt, dd, hr, pre\": \"\",\n" +
-                            "\t\t\t\"font\": \"size, color\",\n" +
-                            "\t\t\t\"a\": \"href, target\"\n" +
-                            "\t\t},\n" +
-                            "\t\t\"methods\": {\n" +
-                            "\t\t\t\"allowStandardUrlProtocols\": \"\"\n" +
-                            "\t\t}\n" +
-                            "\t}\n" +
-                            "]";
+                if (name.equals("1")) {
+                    String defaultJsonPolicy = """
+                            [
+                                {
+                                    "type": "inbuilt",
+                                    "name": "blocks, formatting, styles, tables, images"
+                                },
+                                {
+                                    "type": "new",
+                                    "allow": {
+                                        "dl, dt, dd, hr, pre": "",
+                                        "font": "size, color",
+                                        "a": "href, target"
+                                    },
+                                    "methods": {
+                                        "allowStandardUrlProtocols": ""
+                                    }
+                                }
+                            ]""";
                     return CustomPolicyBuilder.build(defaultJsonPolicy);
-                }
-                else if(name.equals("2")) {
-                    String defaultJsonPolicy = "[\n" +
-                            "\t{\n" +
-                            "\t\t\"type\": \"inbuilt\",\n" +
-                            "\t\t\"name\": \"blocks, formatting, styles, links, tables, images\"\n" +
-                            "\t},\n" +
-                            "\t{\n" +
-                            "\t\t\"type\": \"new\",\n" +
-                            "\t\t\"allow\": {\n" +
-                            "\t\t\t\"dl, dt, dd, hr, pre\": \"\"\n" +
-                            "\t\t}\n" +
-                            "\t}\n" +
-                            "]";
+                } else if (name.equals("2")) {
+                    String defaultJsonPolicy = """
+                            [
+                                {
+                                    "type": "inbuilt",
+                                    "name": "blocks, formatting, styles, links, tables, images"
+                                },
+                                {
+                                    "type": "new",
+                                    "allow": {
+                                        "dl, dt, dd, hr, pre": ""
+                                    }
+                                }
+                            ]""";
                     return CustomPolicyBuilder.build(defaultJsonPolicy);
                 }
                 throw new DefinedException("No such Default policy found");
@@ -211,47 +198,4 @@ public class CustomPolicyBuilder {
             .allowAttributes("href", "target").onElements("a")
             .toFactory();
 
-    public static void main(String[] args) {
-
-        String jsonString = "[\n" +
-                "\t{\n" +
-                "\t\t\"type\": \"inbuilt\",\n" +
-                "\t\t\"name\": \"blocks, formatting, blocks, tables, images\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"type\": \"new\",\n" +
-                "\t\t\"methods\": {\n" +
-                "\t\t\t\"allowElements\": \"dl, dt, dd, hr, pre\"\n" +
-                "\t\t}\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"type\": \"new\",\n" +
-                "\t\t\"name\": \"font\",\n" +
-                "\t\t\"methods\": {\n" +
-                "\t\t\t\"allowElements\": \"font\",\n" +
-                "\t\t\t\"allowWithoutAttributes\": \"font\",\n" +
-                "\t\t\t\"allowAttributes\": \"size, color\"\n" +
-                "\t\t}\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"type\": \"new\",\n" +
-                "\t\t\"name\": \"a\",\n" +
-                "\t\t\"methods\": {\n" +
-                "\t\t\t\"allowStandardUrlProtocols\": \"\",\n" +
-                "\t\t\t\"allowElements\": \"a\",\n" +
-                "\t\t\t\"allowAttributes\": \"href, target\"\n" +
-                "\t\t}\n" +
-                "\t}\n" +
-                "]";
-
-        String htmlString = "<font color=\"red\" size = \"5\"> hello";
-
-        try {
-            PolicyFactory policyFactory = build(jsonString);
-            System.out.println(policyFactory.sanitize(htmlString));
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
-            e.printStackTrace();
-        }
-
-    }
 }
