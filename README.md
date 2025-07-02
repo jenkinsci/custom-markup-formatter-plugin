@@ -53,7 +53,7 @@ Thus, each element in the JSON array represents one policy.
     
     2. **Inbuilt Policy**
     
-        Inbuilt policy is defined in the Sanitizers class available at [[GitHub](https://github.com/OWASP/java-html-sanitizer/blob/main/src/main/java/org/owasp/html/Sanitizers.java), [DOCS](https://www.javadoc.io/doc/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/20160628.1/org/owasp/html/Sanitizers.html)].
+        Inbuilt policy is defined in the Sanitizers class available at [[GitHub](https://github.com/OWASP/java-html-sanitizer/blob/main/owasp-java-html-sanitizer/src/main/java/org/owasp/html/Sanitizers.java), [DOCS](https://www.javadoc.io/doc/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/latest/org/owasp/html/Sanitizers.html)].
         ```json
         {
          "type": "inbuilt",
@@ -83,7 +83,7 @@ Thus, each element in the JSON array represents one policy.
         }
         ```     
        
-       In most cases, only using **allow** will do the job. **methods** can be used for more advanced configuration. The list of methods are part of HtmlPolicyBuilder available at [[GitHub](https://github.com/OWASP/java-html-sanitizer/blob/main/src/main/java/org/owasp/html/HtmlPolicyBuilder.java), [DOCS](https://www.javadoc.io/doc/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/20160628.1/org/owasp/html/HtmlPolicyBuilder.html)]
+       In most cases, only using **allow** will do the job. **methods** can be used for more advanced configuration. The list of methods are part of HtmlPolicyBuilder available at [[GitHub](https://github.com/OWASP/java-html-sanitizer/blob/main/owasp-java-html-sanitizer/src/main/java/org/owasp/html/HtmlPolicyBuilder.java), [DOCS](https://www.javadoc.io/doc/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/latest/org/owasp/html/HtmlPolicyBuilder.html)]
        
        **Note:** Supports method with String parameters or no parametes and return type as being HtmlPolicyBuilder and AttributeBuilder as defined in the docs.
 
