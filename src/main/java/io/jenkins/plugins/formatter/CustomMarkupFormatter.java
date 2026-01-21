@@ -43,6 +43,19 @@ public class CustomMarkupFormatter extends MarkupFormatter {
 
         // Safely retrieve the policy configuration
         PolicyConfiguration config = PolicyConfiguration.get();
+
+        // If get() returns null, try accessing via extension list
+        if (config == null) {
+            try {
+                java.util.List<PolicyConfiguration> configs = Jenkins.get().getExtensionList(PolicyConfiguration.class);
+                if (!configs.isEmpty()) {
+                    config = configs.get(0);
+                }
+            } catch (Exception e) {
+                // Ignore and fall back to default policy
+            }
+        }
+
         if (config != null) {
             policyDefinition = config.getPolicyDefinition();
         }
