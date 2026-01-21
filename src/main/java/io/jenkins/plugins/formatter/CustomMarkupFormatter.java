@@ -39,14 +39,28 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         );
 
         PolicyFactory DEFINITION = null;
-        try {
-            DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
-            HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
-            e.printStackTrace();
+        String policyDefinition = null;
+
+        // Safely retrieve the policy configuration
+        PolicyConfiguration config = PolicyConfiguration.get();
+        if (config != null) {
+            policyDefinition = config.getPolicyDefinition();
         }
 
-        if(DEFINITION == null) {
+        // Try to build policy from configuration
+        if (policyDefinition != null && !policyDefinition.isEmpty()) {
+            try {
+                DEFINITION = CustomPolicyBuilder.build(policyDefinition);
+                HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
+                e.printStackTrace();
+                // Fall through to use default policy
+                DEFINITION = null;
+            }
+        }
+
+        // Fall back to default policy if custom policy failed or wasn't available
+        if (DEFINITION == null) {
             try {
                 DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
                 HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
@@ -54,8 +68,6 @@ public class CustomMarkupFormatter extends MarkupFormatter {
                 e.printStackTrace();
             }
         }
-
-
 
     }
 
