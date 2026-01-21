@@ -39,14 +39,41 @@ public class CustomMarkupFormatter extends MarkupFormatter {
         );
 
         PolicyFactory DEFINITION = null;
-        try {
-            DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.get().getPolicyDefinition());
-            HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
-            e.printStackTrace();
+        String policyDefinition = null;
+
+        // Safely retrieve the policy configuration
+        PolicyConfiguration config = PolicyConfiguration.get();
+
+        // If get() returns null, try accessing via extension list
+        if (config == null) {
+            try {
+                java.util.List<PolicyConfiguration> configs = Jenkins.get().getExtensionList(PolicyConfiguration.class);
+                if (!configs.isEmpty()) {
+                    config = configs.get(0);
+                }
+            } catch (Exception e) {
+                // Ignore and fall back to default policy
+            }
         }
 
-        if(DEFINITION == null) {
+        if (config != null) {
+            policyDefinition = config.getPolicyDefinition();
+        }
+
+        // Try to build policy from configuration
+        if (policyDefinition != null && !policyDefinition.isEmpty()) {
+            try {
+                DEFINITION = CustomPolicyBuilder.build(policyDefinition);
+                HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | DefinedException e) {
+                e.printStackTrace();
+                // Fall through to use default policy
+                DEFINITION = null;
+            }
+        }
+
+        // Fall back to default policy if custom policy failed or wasn't available
+        if (DEFINITION == null) {
             try {
                 DEFINITION = CustomPolicyBuilder.build(PolicyConfiguration.DEFAULT_POLICY);
                 HtmlSanitizer.sanitize(s, DEFINITION.apply(renderer));
@@ -54,8 +81,6 @@ public class CustomMarkupFormatter extends MarkupFormatter {
                 e.printStackTrace();
             }
         }
-
-
 
     }
 
