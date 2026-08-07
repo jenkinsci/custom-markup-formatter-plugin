@@ -3,12 +3,12 @@ package io.jenkins.plugins.formatter;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.owasp.html.PolicyFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import hudson.Util;
 
 /**
  * Example of Jenkins global configuration.
@@ -61,7 +61,7 @@ public class PolicyConfiguration extends GlobalConfiguration {
 
     @SuppressWarnings({"lgtm[jenkins/no-permission-check]", "lgtm[jenkins/csrf]"})
     public FormValidation doCheckPolicyDefinition(@QueryParameter String value) {
-        if (StringUtils.isEmpty(value)) {
+        if (Util.fixEmpty(value) == null) {
             return FormValidation.warning("Please specify a value.");
         }
 
